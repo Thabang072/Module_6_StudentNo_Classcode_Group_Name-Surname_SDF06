@@ -1,12 +1,32 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Add to Cart</title>
-        <link rel="stylesheet" href="index.css">
-    </head>
-    <body>
-        <input type="text" id="input-field" placeholder="Bread">
-        <button id="add-button">Add to cart</button>
-        <script src="index.js"></script>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart with Firebase</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="index.js" defer></script>
+</head>
+<body>
+  <h1>Shopping Cart</h1>
+
+  <div class="item">
+    <span>Item 1 - $10</span>
+    <button onclick="addItemToCart({ name: 'Item 1', price: 10, quantity: 1 })">Add to Cart</button>
+  </div>
+
+  <div class="item">
+    <span>Item 2 - $20</span>
+    <button onclick="addItemToCart({ name: 'Item 2', price: 20, quantity: 1 })">Add to Cart</button>
+  </div>
+
+  <div class="item">
+    <span>Item 3 - $30</span>
+    <button onclick="addItemToCart({ name: 'Item 3', price: 30, quantity: 1 })">Add to Cart</button>
+  </div>
+
+  <button onclick="displayCartItems()">Show Cart Items</button>
+
+  <div id="cart-items"></div>
+</body>
 </html>
