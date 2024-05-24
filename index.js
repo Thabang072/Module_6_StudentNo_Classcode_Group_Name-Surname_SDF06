@@ -1,5 +1,6 @@
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,39 +17,53 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Function to add item to cart
 async function addItemToCart(item) {
   try {
     const docRef = await addDoc(collection(db, "cart"), item);
     console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
+  } catch (error) {
+    console.error("Error adding document: ", error);
   }
 }
 
+// Function to display cart items
 async function displayCartItems() {
   const cartItemsContainer = document.getElementById('cart-items');
-  cartItemsContainer.innerHTML = ""; // Clear the container before displaying new items
+  cartItemsContainer.innerHTML = "";
 
-  const querySnapshot = await getDocs(collection(db, "cart"));
-  querySnapshot.forEach((doc) => {
-    const item = doc.data();
-    const itemElement = document.createElement('div');
-    itemElement.textContent = `${item.name} - $${item.price} x ${item.quantity}`;
-    cartItemsContainer.appendChild(itemElement);
-  });
+  try {
+    const querySnapshot = await getDocs(collection(db, "cart"));
+    querySnapshot.forEach((doc) => {
+      const item = doc.data();
+      const itemElement = document.createElement('div');
+      itemElement.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+      cartItemsContainer.appendChild(itemElement);
+    });
+  } catch (error) {
+    console.error("Error displaying cart items: ", error);
+  }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.item button').forEach(button => {
-    button.addEventListener('click', () => {
-      const itemDetails = {
-        name: button.parentElement.querySelector('span').textContent.split(' - ')[0],
-        price: parseInt(button.parentElement.querySelector('span').textContent.split(' - $')[1]),
-        quantity: 1
-      };
-      addItemToCart(itemDetails);
-    });
-  });
+// Event listener for "Add to Cart" button
+document.getElementById('add-to-cart').addEventListener('click', async () => {
+  const itemName = document.getElementById('item-name').value.trim();
+  const itemPrice = parseFloat(document.getElementById('item-price').value);
 
-  document.querySelector('button#display-cart').addEventListener('click', displayCartItems);
+  if (itemName && !isNaN(itemPrice) && itemPrice > 0) {
+    const itemDetails = {
+      name: itemName,
+      price: itemPrice,
+      quantity: 1
+    };
+    await addItemToCart(itemDetails);
+    document.getElementById('item-name').value = '';
+    document.getElementById('item-price').value = '';
+    displayCartItems();
+  } else {
+    alert("Please enter a valid item name and price.");
+  }
 });
+
+// Display cart items on page load
+displayCartItems();
